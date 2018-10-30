@@ -58,12 +58,19 @@ dependencies {
 
     //Firebase
     implementation "com.google.firebase:firebase-core:$rootProject.firebase"
+    //Auth
+    implementation "com.google.firebase:firebase-auth:$rootProject.firebase_auth"
+    //Database
+    implementation "com.google.firebase:firebase-database:$rootProject.firebase"
 
     //Gson
     implementation "com.google.code.gson:gson:$rootProject.gson"
 
     //Logging Interceptor
     implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.logging_interceptor"
+
+    //POI
+    implementation project(path: ':poi')
 
     //Retrofit
     implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit"
