@@ -27,11 +27,15 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "com.android.support:appcompat-v7:$rootProject.android_support"
     implementation "com.android.support.constraint:constraint-layout:$rootProject.constraint_layout"
     testImplementation "junit:junit:$rootProject.junit"
     androidTestImplementation "com.android.support.test:runner:$rootProject.runner"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.espresso"
+
+    //Android Support
+    implementation "com.android.support:support-v4:$rootProject.android_support"
+    implementation "com.android.support:appcompat-v7:$rootProject.android_support"
+    implementation "com.android.support:support-media-compat:$rootProject.android_support"
 
     // Anko Commons
     implementation "org.jetbrains.anko:anko-commons:$rootProject.anko"
@@ -52,6 +56,9 @@ dependencies {
     implementation "com.google.dagger:dagger:$rootProject.dagger"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.dagger"
 
+    //Firebase
+    implementation "com.google.firebase:firebase-core:$rootProject.firebase"
+
     //Gson
     implementation "com.google.code.gson:gson:$rootProject.gson"
 
@@ -62,3 +69,5 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit"
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofit"
 }
+
+apply plugin: 'com.google.gms.google-services'
