@@ -35,6 +35,7 @@ dependencies {
     //Android Support
     implementation "com.android.support:support-v4:$rootProject.android_support"
     implementation "com.android.support:appcompat-v7:$rootProject.android_support"
+    implementation "com.android.support:design:$rootProject.android_support"
     implementation "com.android.support:support-media-compat:$rootProject.android_support"
 
     // Anko Commons
