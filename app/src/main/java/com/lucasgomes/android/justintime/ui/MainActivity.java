@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.lucasgomes.android.justintime.App;
 import com.lucasgomes.android.justintime.R;
 import com.lucasgomes.android.justintime.helper.CalendarUtils;
@@ -48,6 +50,8 @@ public class MainActivity
 
     private static String CALENDAR_KEY = "calendar";
 
+    private FirebaseAuth auth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +60,15 @@ public class MainActivity
         if(getSupportActionBar() != null) {
             getSupportActionBar().setTitle("");
         }
+
+        auth = FirebaseAuth.getInstance();
+
+        if (auth.getCurrentUser() == null) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+        }
+
+
         ((App) getApplication()).component.inject(this);
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 

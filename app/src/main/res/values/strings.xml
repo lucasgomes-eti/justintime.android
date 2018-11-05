@@ -19,6 +19,7 @@
     <string name="workload_key">workload_key</string>
     <string name="work_days_key">work_days_key</string>
     <string name="tap_select_days">Tap to select the days</string>
+    <string name="dismiss">Dismiss</string>
 
     <string-array name="workloadArray">
         <item>1 hour</item>
