@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference android:title="Hourly load per day"
+        android:key="@string/workload_key"
+        android:defaultValue="8"
+        android:entries="@array/workloadArray"
+        android:entryValues="@array/workloadValues"
+        android:summary="%s" />
+
+    <MultiSelectListPreference android:title="Days of the week that I work"
+        android:entries="@array/workDaysArray"
+        android:entryValues="@array/workDaysValues"
+        android:key="@string/work_days_key"
+        android:defaultValue="@array/workDaysValuesDefault"
+        android:summary="@string/tap_select_days" />
+
+</PreferenceScreen>

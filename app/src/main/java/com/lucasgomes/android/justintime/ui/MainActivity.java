@@ -1,12 +1,14 @@
 package com.lucasgomes.android.justintime.ui;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 
 import com.lucasgomes.android.justintime.App;
@@ -93,6 +95,22 @@ public class MainActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_file_export: {
+                return false;
+            }
+            case R.id.action_settings: {
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            }
+            default: {
+                return false;
+            }
+        }
     }
 
     @Override

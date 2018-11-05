@@ -20,6 +20,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.LoginActivity" />
+        <activity android:name=".ui.SettingsActivity"
+            android:label="@string/settings"/>
     </application>
 
 </manifest>
