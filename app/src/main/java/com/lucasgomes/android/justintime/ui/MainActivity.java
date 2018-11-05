@@ -3,7 +3,6 @@ package com.lucasgomes.android.justintime.ui;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -65,10 +64,7 @@ public class MainActivity
 
         recyclerView = findViewById(R.id.rv_logs);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-//                ((LinearLayoutManager) layoutManager).getOrientation());
         recyclerView.setLayoutManager(layoutManager);
-        //recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(logsAdapter);
 
         monthButton.setOnClickListener((v) -> {
