@@ -3,4 +3,11 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
+    <string name="year">Year</string>
+    <string name="month">Month</string>
+    <string name="current_month">Current Month</string>
+    <string name="select">Select</string>
+    <string name="cancel">Cancel</string>
+    <string name="export_sheet">Export Sheet</string>
+    <string name="settings">Settings</string>
 </resources>

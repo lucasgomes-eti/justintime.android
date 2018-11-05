@@ -4,7 +4,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-import com.lucasgomes.android.justintime.model.Main;
+import com.lucasgomes.android.justintime.model.Log;
 
 @Entity(tableName = "main")
 public class MainEntity {
@@ -15,9 +15,5 @@ public class MainEntity {
 
     public MainEntity(String hello) {
         this.hello = hello;
-    }
-
-    public Main map() {
-        return new Main(hello);
     }
 }

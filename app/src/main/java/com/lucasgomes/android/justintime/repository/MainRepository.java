@@ -4,7 +4,7 @@ import android.arch.lifecycle.LiveData;
 
 import com.lucasgomes.android.justintime.AppExecutors;
 import com.lucasgomes.android.justintime.db.dao.MainDao;
-import com.lucasgomes.android.justintime.model.Main;
+import com.lucasgomes.android.justintime.model.Log;
 import com.lucasgomes.android.justintime.model.api.Resource;
 import com.lucasgomes.android.justintime.remote.MainService;
 import com.lucasgomes.android.justintime.remote.util.ApiResponse;
@@ -25,10 +25,10 @@ public class MainRepository {
         this.appExecutors = appExecutors;
     }
 
-    public LiveData<Resource<Main>> loadMain() {
-        return new NetworkResource<Main>(appExecutors) {
+    public LiveData<Resource<Log>> loadMain() {
+        return new NetworkResource<Log>(appExecutors) {
             @Override
-            public LiveData<ApiResponse<Main>> createCall() {
+            public LiveData<ApiResponse<Log>> createCall() {
                 return mainService.getMain();
             }
         }.asLiveData();
