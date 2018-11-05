@@ -2,6 +2,7 @@ package com.lucasgomes.android.justintime.ui;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +22,7 @@ import java.util.Calendar;
 
 public class MainActivity
         extends AppCompatActivity
-        implements YearMonthPickerDialogFragment.YearMonthPickerListener, ListItemClickListener {
+        implements YearMonthPickerDialogFragment.OnDateSelectedListener, ListItemClickListener {
 
     private MainViewModel viewModel;
 
@@ -73,6 +74,14 @@ public class MainActivity
                 yearMonthPickerDialog.show(getSupportFragmentManager(), YearMonthPickerDialogFragment.class.getName());
             }
         });
+
+        findViewById(R.id.fab_new_log).setOnClickListener((v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .add(android.R.id.content, new NewLogDialogFragment())
+                    .addToBackStack(null)
+                    .commit();
+        }));
     }
 
     @Override

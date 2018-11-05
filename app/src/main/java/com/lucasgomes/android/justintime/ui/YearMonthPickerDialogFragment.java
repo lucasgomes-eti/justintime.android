@@ -22,11 +22,11 @@ import java.util.List;
 
 public class YearMonthPickerDialogFragment extends DialogFragment {
 
-    public interface YearMonthPickerListener {
+    public interface OnDateSelectedListener {
         void onDateSelected(Calendar calendar);
     }
 
-    YearMonthPickerListener listener;
+    OnDateSelectedListener listener;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -105,7 +105,7 @@ public class YearMonthPickerDialogFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (YearMonthPickerListener) context;
+            listener = (OnDateSelectedListener) context;
         } catch (ClassCastException ex) {
             ex.printStackTrace();
         }
