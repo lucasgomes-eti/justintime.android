@@ -42,6 +42,7 @@ public class MainActivity
             )), this);
 
     private YearMonthPickerDialogFragment yearMonthPickerDialog = new YearMonthPickerDialogFragment();
+    private NewLogDialogFragment newLogDialogFragment = new NewLogDialogFragment();
 
     private Button monthButton;
     private RecyclerView recyclerView;
@@ -91,11 +92,13 @@ public class MainActivity
         });
 
         findViewById(R.id.fab_new_log).setOnClickListener((v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .add(android.R.id.content, new NewLogDialogFragment())
-                    .addToBackStack(null)
-                    .commit();
+            if (!newLogDialogFragment.isAdded()) {
+                getSupportFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .add(android.R.id.content, newLogDialogFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
         }));
     }
 
