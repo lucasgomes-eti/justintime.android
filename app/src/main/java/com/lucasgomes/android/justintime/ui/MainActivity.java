@@ -42,7 +42,6 @@ public class MainActivity
             )), this);
 
     private YearMonthPickerDialogFragment yearMonthPickerDialog = new YearMonthPickerDialogFragment();
-    private NewLogDialogFragment newLogDialogFragment = new NewLogDialogFragment();
 
     private Button monthButton;
     private RecyclerView recyclerView;
@@ -92,6 +91,7 @@ public class MainActivity
         });
 
         findViewById(R.id.fab_new_log).setOnClickListener((v -> {
+            NewLogDialogFragment newLogDialogFragment = new NewLogDialogFragment();
             if (!newLogDialogFragment.isAdded()) {
                 getSupportFragmentManager().beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TimePicker
-        android:id="@+id/time_picker"
-        android:layout_width="0dp"
+    <CalendarView
+        android:id="@+id/cv_date"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +27,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btn_cancel"
-        app:layout_constraintTop_toBottomOf="@+id/time_picker" />
+        app:layout_constraintTop_toBottomOf="@+id/cv_date" />
 
     <Button
         android:id="@+id/btn_cancel"
@@ -45,5 +46,5 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time_picker" />
+        app:layout_constraintTop_toBottomOf="@+id/cv_date" />
 </android.support.constraint.ConstraintLayout>

@@ -3,6 +3,8 @@ package com.lucasgomes.android.justintime.ui;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -22,14 +24,31 @@ import android.widget.CheckBox;
 
 import com.lucasgomes.android.justintime.R;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
-public class NewLogDialogFragment extends DialogFragment implements TimePickerDialogFragment.OnTimeSelectedListener {
+public class NewLogDialogFragment
+        extends DialogFragment
+        implements TimePickerDialogFragment.OnTimeSelectedListener,
+        DatePickerDialogFragment.OnDateSelectedListener {
 
     TextInputEditText tietStartTime;
     CheckBox cbFromPast;
     TextInputEditText tietDay;
     TextInputEditText tiedEndTime;
+
+    Date dateStartTime = new Date();
+    Calendar calendarDay = Calendar.getInstance();
+    Date dateEndTime = new Date();
+
+    private static final String START_TIME_FRAGMENT_TAG = "start_time_tag";
+    private static final String END_TIME_FRAGMENT_TAG = "end_time_tag";
+
+    private static final String START_TIME_DATE_KEY = "start_time_key";
+    private static final String CALENDAR_DAY_KEY = "calendar_day_key";
+    private static final String END_TIME_DATE_KEY = "end_time_key";
 
     @Nullable
     @Override
@@ -68,24 +87,45 @@ public class NewLogDialogFragment extends DialogFragment implements TimePickerDi
             TimePickerDialogFragment tpdfStartTime = new TimePickerDialogFragment();
             tpdfStartTime.setListener(this);
 
-            Calendar calendar = Calendar.getInstance();
-            setTietStartTime(calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE));
-
-            tietStartTime.setOnFocusChangeListener((view, visible) -> {
-                if (!tpdfStartTime.isAdded() && visible) {
-                    tpdfStartTime.show(getActivity().getSupportFragmentManager(), TimePickerDialogFragment.class.getName());
-                }
-            });
+            Date date = new Date();
+            tietStartTime.setText(buildTimeText(date.getHours(), date.getMinutes()));
 
             tietStartTime.setOnClickListener((view) -> {
                 if (!tpdfStartTime.isAdded()) {
-                    tpdfStartTime.show(getActivity().getSupportFragmentManager(), TimePickerDialogFragment.class.getName());
+                    tpdfStartTime.show(getActivity().getSupportFragmentManager(), START_TIME_FRAGMENT_TAG);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        tpdfStartTime.setTimePicker(dateStartTime);
+                    }, 100);
                 }
             });
 
             cbFromPast.setOnCheckedChangeListener((view, checked) -> {
                 tietDay.setEnabled(checked);
                 tiedEndTime.setEnabled(checked);
+            });
+
+            DatePickerDialogFragment dpdfDay = new DatePickerDialogFragment();
+            dpdfDay.setListener(this);
+
+            tietDay.setOnClickListener((visible) -> {
+                if (!dpdfDay.isAdded()) {
+                    dpdfDay.show(getActivity().getSupportFragmentManager(), DatePickerDialogFragment.class.getName());
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        dpdfDay.setDate(calendarDay);
+                    }, 100);
+                }
+            });
+
+            TimePickerDialogFragment tpdfEndTime = new TimePickerDialogFragment();
+            tpdfEndTime.setListener(this);
+
+            tiedEndTime.setOnClickListener((view) -> {
+                if (!tpdfEndTime.isAdded()) {
+                    tpdfEndTime.show(getActivity().getSupportFragmentManager(), END_TIME_FRAGMENT_TAG);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        tpdfEndTime.setTimePicker(dateEndTime);
+                    }, 100);
+                }
             });
 
             setHasOptionsMenu(true);
@@ -96,24 +136,56 @@ public class NewLogDialogFragment extends DialogFragment implements TimePickerDi
     }
 
     @Override
-    public void onTimeSelected(int hour, int minute) {
-        setTietStartTime(hour, minute);
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putSerializable(START_TIME_DATE_KEY, dateStartTime);
+        outState.putSerializable(CALENDAR_DAY_KEY, calendarDay);
+        outState.putSerializable(END_TIME_DATE_KEY, dateEndTime);
+        super.onSaveInstanceState(outState);
     }
 
-    private void setTietStartTime(int hour, int minute) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(hour);
-        stringBuilder.append(':');
-        stringBuilder.append(minute);
-        stringBuilder.append(' ');
-
-        if (hour < 12) {
-            stringBuilder.append("AM");
-        } else {
-            stringBuilder.append("PM");
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            dateStartTime = (Date) savedInstanceState.getSerializable(START_TIME_DATE_KEY);
+            calendarDay = (Calendar) savedInstanceState.getSerializable(CALENDAR_DAY_KEY);
+            dateEndTime = (Date) savedInstanceState.getSerializable(END_TIME_DATE_KEY);
         }
+        super.onViewStateRestored(savedInstanceState);
+    }
 
-        tietStartTime.setText(stringBuilder);
+    @Override
+    public void onTimeSelected(String tag, int hour, int minute) {
+        if (tag.equals(START_TIME_FRAGMENT_TAG)) {
+            tietStartTime.setText(buildTimeText(hour, minute));
+            dateStartTime.setHours(hour);
+            dateStartTime.setMinutes(minute);
+        } else if (tag.equals(END_TIME_FRAGMENT_TAG)) {
+            tiedEndTime.setText(buildTimeText(hour, minute));
+            dateEndTime.setHours(hour);
+            dateEndTime.setMinutes(minute);
+        }
+    }
+
+    @Override
+    public void onDateSelected(int year, int month, int dayOfMonth) {
+        tietDay.setText(buildDateText(year, month, dayOfMonth));
+        calendarDay.set(Calendar.YEAR, year);
+        calendarDay.set(Calendar.MONTH, month);
+        calendarDay.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+    }
+
+    private String buildDateText(int year, int month, int dayOfMonth) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        return new SimpleDateFormat(getString(R.string.date_pattern), Locale.getDefault()).format(calendar.getTime());
+    }
+
+    private String buildTimeText(int hour, int minute) {
+        return String.valueOf(hour < 10 ? "0" + hour : hour) +
+                ':' +
+                (minute < 10 ? "0" + minute : minute);
     }
 
     @NonNull

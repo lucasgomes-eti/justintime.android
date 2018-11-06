@@ -20,6 +20,7 @@
     <string name="work_days_key">work_days_key</string>
     <string name="tap_select_days">Tap to select the days</string>
     <string name="dismiss">Dismiss</string>
+    <string name="date_pattern">MM/dd/yyyy</string>
 
     <string-array name="workloadArray">
         <item>1 hour</item>

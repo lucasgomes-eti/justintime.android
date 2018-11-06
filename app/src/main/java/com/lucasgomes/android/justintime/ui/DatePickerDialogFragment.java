@@ -9,21 +9,25 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TimePicker;
+import android.widget.CalendarView;
 
 import com.lucasgomes.android.justintime.R;
 
-import java.util.Date;
+import java.util.Calendar;
 
-public class TimePickerDialogFragment extends DialogFragment {
+public class DatePickerDialogFragment extends DialogFragment {
 
-    interface OnTimeSelectedListener {
-        void onTimeSelected(String tag, int hour, int minute);
+    interface OnDateSelectedListener {
+        void onDateSelected(int year, int month, int dayOfMonth);
     }
 
-    OnTimeSelectedListener listener;
+    OnDateSelectedListener listener;
 
-    TimePicker timePicker;
+    int year, month, dayOfMonth;
+
+    Calendar calendar = Calendar.getInstance();
+
+    CalendarView cvDate;
 
     @NonNull
     @Override
@@ -31,17 +35,27 @@ public class TimePickerDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         if (getActivity() != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            View contentView = getActivity().getLayoutInflater().inflate(R.layout.dialog_time_picker, null);
+            View contentView = getActivity().getLayoutInflater().inflate(R.layout.dialog_date_picker, null);
             builder.setView(contentView);
 
-            timePicker = contentView.findViewById(R.id.time_picker);
+            cvDate = contentView.findViewById(R.id.cv_date);
             Button btnSelect = contentView.findViewById(R.id.btn_select);
             Button btnCancel = contentView.findViewById(R.id.btn_cancel);
 
-            timePicker.setIs24HourView(true);
+            year = calendar.get(Calendar.YEAR);
+            month = calendar.get(Calendar.MONTH);
+            dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+            cvDate.setDate(calendar.getTime().getTime());
+
+            cvDate.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+                this.year = year;
+                this.month = month;
+                this.dayOfMonth = dayOfMonth;
+            });
 
             btnSelect.setOnClickListener((v) -> {
-                listener.onTimeSelected(getTag(), timePicker.getCurrentHour(), timePicker.getCurrentMinute());
+                listener.onDateSelected(year, month, dayOfMonth);
                 dismiss();
             });
 
@@ -55,13 +69,12 @@ public class TimePickerDialogFragment extends DialogFragment {
         }
     }
 
-    void setTimePicker(Date date) {
-        timePicker.setCurrentHour(date.getHours());
-        timePicker.setCurrentMinute(date.getMinutes());
-        timePicker.setIs24HourView(true);
+    void setDate(Calendar calendar) {
+        this.calendar = calendar;
+        cvDate.setDate(calendar.getTime().getTime());
     }
 
-    void setListener(OnTimeSelectedListener listener) {
+    void setListener(OnDateSelectedListener listener) {
         this.listener = listener;
     }
 }
