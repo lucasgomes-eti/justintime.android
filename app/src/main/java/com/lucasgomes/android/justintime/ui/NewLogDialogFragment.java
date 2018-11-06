@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.CheckBox;
 
 import com.lucasgomes.android.justintime.R;
 
@@ -26,6 +27,9 @@ import java.util.Calendar;
 public class NewLogDialogFragment extends DialogFragment implements TimePickerDialogFragment.OnTimeSelectedListener {
 
     TextInputEditText tietStartTime;
+    CheckBox cbFromPast;
+    TextInputEditText tietDay;
+    TextInputEditText tiedEndTime;
 
     @Nullable
     @Override
@@ -35,10 +39,31 @@ public class NewLogDialogFragment extends DialogFragment implements TimePickerDi
             View contentView = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_log, null);
 
             Toolbar toolbar = contentView.findViewById(R.id.toolbar_new_log);
+            toolbar.setTitle(R.string.new_log);
+
             tietStartTime = contentView.findViewById(R.id.tiet_start_time);
+            cbFromPast = contentView.findViewById(R.id.cb_from_past);
+            tietDay = contentView.findViewById(R.id.tiet_day);
+            tiedEndTime = contentView.findViewById(R.id.tiet_end_time);
 
             tietStartTime.setRawInputType(InputType.TYPE_NULL);
             tietStartTime.setTextIsSelectable(true);
+
+            tietDay.setRawInputType(InputType.TYPE_NULL);
+            tietDay.setTextIsSelectable(true);
+
+            tiedEndTime.setRawInputType(InputType.TYPE_NULL);
+            tiedEndTime.setTextIsSelectable(true);
+
+            ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeButtonEnabled(true);
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_clear);
+            }
+
 
             TimePickerDialogFragment tpdfStartTime = new TimePickerDialogFragment();
             tpdfStartTime.setListener(this);
@@ -58,19 +83,12 @@ public class NewLogDialogFragment extends DialogFragment implements TimePickerDi
                 }
             });
 
-            toolbar.setTitle(R.string.new_log);
-
-            ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-
-            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.setDisplayHomeAsUpEnabled(true);
-                actionBar.setHomeButtonEnabled(true);
-                actionBar.setHomeAsUpIndicator(R.drawable.ic_clear);
-            }
+            cbFromPast.setOnCheckedChangeListener((view, checked) -> {
+                tietDay.setEnabled(checked);
+                tiedEndTime.setEnabled(checked);
+            });
 
             setHasOptionsMenu(true);
-
             return contentView;
         } else {
             return super.onCreateView(inflater, container, savedInstanceState);
