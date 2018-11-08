@@ -1,36 +1,35 @@
 package com.lucasgomes.android.justintime.model;
 
-import com.google.gson.Gson;
-
 import org.jetbrains.annotations.Nullable;
 
 public class LogEntity {
-    private String startTime;
-    @Nullable private String endTime;
+    private CalendarEntity startTime;
+    @Nullable private CalendarEntity endTime;
     private String logType;
     private Boolean isComplete;
 
     public LogEntity(Log log) {
-        this.startTime = new Gson().toJson(log.getStartTime());
-        this.endTime = new Gson().toJson(log.getEndTime());
+        this.startTime = new CalendarEntity(log.getStartTime());
+        if (log.getEndTime() != null)
+            this.endTime = new CalendarEntity(log.getEndTime());
         this.logType = log.getLogType();
         this.isComplete = log.getComplete();
     }
 
-    public String getStartTime() {
+    public CalendarEntity getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(CalendarEntity startTime) {
         this.startTime = startTime;
     }
 
     @Nullable
-    public String getEndTime() {
+    public CalendarEntity getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(@Nullable String endTime) {
+    public void setEndTime(@Nullable CalendarEntity endTime) {
         this.endTime = endTime;
     }
 
