@@ -21,6 +21,10 @@
     <string name="tap_select_days">Tap to select the days</string>
     <string name="dismiss">Dismiss</string>
     <string name="date_pattern">MM/dd/yyyy</string>
+    <string name="log_db_node">logs</string>
+    <string name="log_saved_successful">Log saved successful</string>
+    <string name="normal_work">Normal work</string>
+    <string name="extra_work">Extra Work</string>
 
     <string-array name="workloadArray">
         <item>1 hour</item>
