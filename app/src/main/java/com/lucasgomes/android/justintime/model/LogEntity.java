@@ -1,5 +1,7 @@
 package com.lucasgomes.android.justintime.model;
 
+import com.google.firebase.database.DatabaseReference;
+
 import org.jetbrains.annotations.Nullable;
 
 public class LogEntity {

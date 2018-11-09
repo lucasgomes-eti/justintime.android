@@ -3,6 +3,8 @@ package com.lucasgomes.android.justintime.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.DatabaseReference;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Calendar;
@@ -12,6 +14,7 @@ public class Log implements Parcelable {
     @Nullable private Calendar endTime;
     private String logType;
     private Boolean isComplete;
+    @Nullable private DatabaseReference databaseReference;
 
     public Log(Calendar startTime, @Nullable Calendar endTime, String logType, Boolean isComplete) {
         this.startTime = startTime;
@@ -111,5 +114,14 @@ public class Log implements Parcelable {
         dest.writeSerializable(endTime);
         dest.writeString(logType);
         dest.writeByte((byte) (isComplete == null ? 0 : isComplete ? 1 : 2));
+    }
+
+    @Nullable
+    public DatabaseReference getDatabaseReference() {
+        return databaseReference;
+    }
+
+    public void setDatabaseReference(@Nullable DatabaseReference databaseReference) {
+        this.databaseReference = databaseReference;
     }
 }

@@ -1,6 +1,7 @@
 package com.lucasgomes.android.justintime.ui;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +36,8 @@ import com.lucasgomes.android.justintime.viewmodel.MainViewModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity
         extends AppCompatActivity
@@ -133,6 +136,7 @@ public class MainActivity
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             if (snapshot.getValue() != null) {
                                 Log log = new Log(snapshot.getValue(LogEntity.class));
+                                log.setDatabaseReference(snapshot.getRef());
                                 StringBuilder title = new StringBuilder();
                                 if (log.getStartTime().get(Calendar.DAY_OF_MONTH) == Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
                                     title.append(getString(R.string.today));
@@ -188,7 +192,44 @@ public class MainActivity
 
     @Override
     public void onListItemClick(int itemIndex) {
+        Log log = logsAdapter.mLogs.get(itemIndex).getLog();
+        Calendar calendarEndTime = Calendar.getInstance();
 
+        Set<String> workDays = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_PRIVATE)
+                .getStringSet(getString(R.string.work_days_key),
+                        new HashSet<>(Arrays.asList(getResources().getStringArray(R.array.workDaysValuesDefault))));
+
+        int workload = Integer.valueOf(getSharedPreferences(getPackageName() + "_preferences", Context.MODE_PRIVATE)
+                .getString(getString(R.string.workload_key), "8"));
+
+        int hoursWorked = calendarEndTime.get(Calendar.HOUR) - log.getStartTime().get(Calendar.HOUR);
+
+        if (workDays.contains(String.valueOf(log.getStartTime().get(Calendar.DAY_OF_WEEK)))) {
+            if (hoursWorked > workload) {
+                int extraHoursWorked = hoursWorked - workload;
+                Calendar calendarEndNormalWork = calendarEndTime;
+                calendarEndNormalWork.set(Calendar.HOUR, calendarEndTime.get(Calendar.HOUR) - extraHoursWorked);
+
+                log.setEndTime(calendarEndNormalWork);
+                log.setComplete(true);
+
+                log.getDatabaseReference().setValue(new LogEntity(log));
+                databaseReference.child(getString(R.string.log_db_node))
+                        .child(auth.getCurrentUser().getUid())
+                        .push()
+                        .setValue(new LogEntity(new Log(calendarEndNormalWork, calendarEndTime, getString(R.string.extra_work), true)));
+            } else {
+                log.setEndTime(calendarEndTime);
+                log.setComplete(true);
+
+                log.getDatabaseReference().setValue(new LogEntity(log));
+            }
+        } else {
+            log.setEndTime(calendarEndTime);
+            log.setComplete(true);
+
+            log.getDatabaseReference().setValue(new LogEntity(log));
+        }
     }
 
     @Override
