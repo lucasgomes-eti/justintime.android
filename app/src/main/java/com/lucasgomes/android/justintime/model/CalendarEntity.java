@@ -10,6 +10,9 @@ public class CalendarEntity {
     private int minute;
     private int second;
 
+    public CalendarEntity() {
+    }
+
     public CalendarEntity(Calendar calendar) {
         this.year = calendar.get(Calendar.YEAR);
         this.month = calendar.get(Calendar.MONTH);

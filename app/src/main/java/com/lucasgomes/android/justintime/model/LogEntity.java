@@ -8,10 +8,19 @@ public class LogEntity {
     private String logType;
     private Boolean isComplete;
 
+    private String startTime_year_month;
+
+    public LogEntity() {
+    }
+
     public LogEntity(Log log) {
         this.startTime = new CalendarEntity(log.getStartTime());
-        if (log.getEndTime() != null)
+        this.startTime_year_month = String.valueOf(
+                String.valueOf(startTime.getYear()) +
+                        String.valueOf(startTime.getMonth()));
+        if (log.getEndTime() != null) {
             this.endTime = new CalendarEntity(log.getEndTime());
+        }
         this.logType = log.getLogType();
         this.isComplete = log.getComplete();
     }
@@ -47,5 +56,13 @@ public class LogEntity {
 
     public void setComplete(Boolean complete) {
         isComplete = complete;
+    }
+
+    public String getStartTime_year_month() {
+        return startTime_year_month;
+    }
+
+    public void setStartTime_year_month(String startTime_year_month) {
+        this.startTime_year_month = startTime_year_month;
     }
 }

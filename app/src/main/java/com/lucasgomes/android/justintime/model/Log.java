@@ -20,6 +20,32 @@ public class Log implements Parcelable {
         this.isComplete = isComplete;
     }
 
+    public Log(LogEntity logEntity) {
+        Calendar startTime = Calendar.getInstance();
+        startTime.set(Calendar.YEAR, logEntity.getStartTime().getYear());
+        startTime.set(Calendar.MONTH, logEntity.getStartTime().getMonth());
+        startTime.set(Calendar.DAY_OF_MONTH, logEntity.getStartTime().getDayOfMonth());
+        startTime.set(Calendar.HOUR_OF_DAY, logEntity.getStartTime().getHourOfDay());
+        startTime.set(Calendar.MINUTE, logEntity.getStartTime().getMinute());
+        startTime.set(Calendar.SECOND, logEntity.getStartTime().getSecond());
+
+        this.startTime = startTime;
+
+        if (logEntity.getEndTime() != null) {
+            Calendar endTime = Calendar.getInstance();
+            endTime.set(Calendar.YEAR, logEntity.getEndTime().getYear());
+            endTime.set(Calendar.MONTH, logEntity.getEndTime().getMonth());
+            endTime.set(Calendar.DAY_OF_MONTH, logEntity.getEndTime().getDayOfMonth());
+            endTime.set(Calendar.HOUR_OF_DAY, logEntity.getEndTime().getHourOfDay());
+            endTime.set(Calendar.MINUTE, logEntity.getEndTime().getMinute());
+            endTime.set(Calendar.SECOND, logEntity.getEndTime().getSecond());
+
+            this.endTime = endTime;
+        }
+
+        this.logType = logEntity.getLogType();
+        this.isComplete = logEntity.getComplete();
+    }
 
     protected Log(Parcel in) {
         startTime = (Calendar) in.readSerializable();

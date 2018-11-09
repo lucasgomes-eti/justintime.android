@@ -57,12 +57,20 @@ public class LogsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         (log.getStartTime().get(Calendar.HOUR) < 10 ?
                                 "0" + log.getStartTime().get(Calendar.HOUR):
                                 log.getStartTime().get(Calendar.HOUR)) + ":" +
-
                                 (log.getStartTime().get(Calendar.MINUTE) < 10 ?
                                         "0" + log.getStartTime().get(Calendar.MINUTE):
                                         log.getStartTime().get(Calendar.MINUTE)) + " " +
+                                (log.getStartTime().get(Calendar.AM_PM) == 0 ? "AM" : "PM") + " - " +
 
-                                (log.getStartTime().get(Calendar.AM_PM) == 0 ? "AM" : "PM")
+                                (log.getEndTime() == null ? viewHolder.itemView.getContext().getString(R.string.tap_to_complete) : (
+                                        (log.getEndTime().get(Calendar.HOUR) < 10 ?
+                                                "0" + log.getEndTime().get(Calendar.HOUR):
+                                                log.getEndTime().get(Calendar.HOUR)) + ":" +
+                                                (log.getEndTime().get(Calendar.MINUTE) < 10 ?
+                                                        "0" + log.getEndTime().get(Calendar.MINUTE):
+                                                        log.getEndTime().get(Calendar.MINUTE)) + " " +
+                                                (log.getEndTime().get(Calendar.AM_PM) == 0 ? "AM" : "PM")
+                                        ))
                 ));
                 ((LogsViewHolder) viewHolder).typeLog.setText(log.getLogType());
             }
