@@ -43,10 +43,6 @@ dependencies {
     implementation "com.android.support:design:$rootProject.android_support"
     implementation "com.android.support:support-media-compat:$rootProject.android_support"
 
-    // Anko Commons
-    implementation "org.jetbrains.anko:anko-commons:$rootProject.anko"
-    implementation "org.jetbrains.anko:anko-appcompat-v7-commons:$rootProject.anko"
-
     // Architecture Components
 
     // ViewModel and LiveData
@@ -67,7 +63,7 @@ dependencies {
     //Auth
     implementation "com.google.firebase:firebase-auth:$rootProject.firebase"
     //Database
-    implementation "com.google.firebase:firebase-database:$rootProject.firebase_db"
+    implementation "com.google.firebase:firebase-database:$rootProject.firebase"
 
     //Gson
     implementation "com.google.code.gson:gson:$rootProject.gson"

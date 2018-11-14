@@ -1,12 +1,11 @@
 package com.lucasgomes.android.justintime.model;
 
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
+import android.support.annotation.Nullable;
 
 public class LogGroup {
     private String title;
-    @Nullable private Log log;
+    @Nullable
+    private Log log;
 
     public LogGroup(String title, @Nullable Log log) {
         this.title = title;

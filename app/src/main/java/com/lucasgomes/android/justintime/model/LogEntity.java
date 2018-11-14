@@ -1,12 +1,11 @@
 package com.lucasgomes.android.justintime.model;
 
-import com.google.firebase.database.DatabaseReference;
-
-import org.jetbrains.annotations.Nullable;
+import android.support.annotation.Nullable;
 
 public class LogEntity {
     private CalendarEntity startTime;
-    @Nullable private CalendarEntity endTime;
+    @Nullable
+    private CalendarEntity endTime;
     private String logType;
     private Boolean isComplete;
 

@@ -2,16 +2,16 @@ package com.lucasgomes.android.justintime.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.google.firebase.database.DatabaseReference;
-
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Calendar;
 
 public class Log implements Parcelable {
     private Calendar startTime;
-    @Nullable private Calendar endTime;
+    @Nullable
+    private Calendar endTime;
     private String logType;
     private Boolean isComplete;
     @Nullable private DatabaseReference databaseReference;

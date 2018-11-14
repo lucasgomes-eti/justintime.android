@@ -1,20 +1,31 @@
 package com.lucasgomes.android.justintime.ui;
 
+import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,10 +44,22 @@ import com.lucasgomes.android.justintime.model.LogEntity;
 import com.lucasgomes.android.justintime.model.LogGroup;
 import com.lucasgomes.android.justintime.viewmodel.MainViewModel;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class MainActivity
@@ -56,6 +79,7 @@ public class MainActivity
     private Calendar calendar = Calendar.getInstance();
 
     private static String CALENDAR_KEY = "calendar";
+    private static int WRITE_EXTERNAL_STORARE = 1000;
 
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
@@ -242,7 +266,8 @@ public class MainActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_file_export: {
-                return false;
+                generateSheet();
+                return true;
             }
             case R.id.action_settings: {
                 startActivity(new Intent(this, SettingsActivity.class));
@@ -251,6 +276,105 @@ public class MainActivity
             default: {
                 return false;
             }
+        }
+    }
+
+    private void generateSheet() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            EditText prompEditText = new EditText(this);
+            final String[] sheetFileName = {""};
+            builder.setTitle(R.string.type_file_name)
+                    .setView(prompEditText)
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                        dialog.dismiss();
+                    })
+                    .setPositiveButton(R.string.generate_file, (dialog, which) -> {
+                        HSSFWorkbook workbook = new HSSFWorkbook();
+                        HSSFSheet logsSheet = workbook.createSheet(getString(R.string.logs));
+                        HSSFRow rowHeader = logsSheet.createRow(0);
+                        HSSFCell cellStartTimeHeader = rowHeader.createCell(0);
+                        cellStartTimeHeader.setCellValue(new HSSFRichTextString(getString(R.string.start_time)));
+                        HSSFCell cellEndTimeHeader = rowHeader.createCell(1);
+                        cellEndTimeHeader.setCellValue(new HSSFRichTextString(getString(R.string.end_time)));
+                        HSSFCell cellLogTypeHeader = rowHeader.createCell(2);
+                        cellLogTypeHeader.setCellValue(new HSSFRichTextString(getString(R.string.log_type)));
+
+                        for (int i = 0; i < logsAdapter.mLogs.size(); i++) {
+                            @Nullable
+                            Log log = logsAdapter.mLogs.get(i).getLog();
+
+                            if (log != null) {
+                                HSSFRow row = logsSheet.createRow(i);
+                                HSSFCell cellStartTime = row.createCell(0);
+                                cellStartTime.setCellValue(new HSSFRichTextString(new SimpleDateFormat(getString(R.string.date_time_pattern), Locale.getDefault()).format(log.getStartTime().getTime())));
+                                HSSFCell cellEndTime = row.createCell(1);
+                                if (log.getEndTime() != null) {
+                                    cellEndTime.setCellValue(new HSSFRichTextString(new SimpleDateFormat(getString(R.string.date_time_pattern), Locale.getDefault()).format(log.getEndTime().getTime())));
+                                } else {
+                                    cellEndTime.setCellValue(new HSSFRichTextString("-"));
+                                }
+                                HSSFCell cellLogType = row.createCell(2);
+                                cellLogType.setCellValue(new HSSFRichTextString(log.getLogType()));
+                            }
+                        }
+
+                        FileOutputStream fileOutputStream = null;
+
+                        try {
+                            String externalStoraDirectoryPath = Environment.getExternalStorageDirectory().toString();
+                            String sheetFileNameFormatted = sheetFileName[0].replace(" ", "").trim();
+                            sheetFileNameFormatted = sheetFileNameFormatted.equals("") ? getString(R.string.my_logs) : sheetFileNameFormatted;
+                            File file = new File(externalStoraDirectoryPath, sheetFileNameFormatted + ".xls");
+                            fileOutputStream = new FileOutputStream(file);
+                            workbook.write(fileOutputStream);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (fileOutputStream != null) {
+                                try {
+                                    fileOutputStream.flush();
+                                    fileOutputStream.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            showMessage(getString(R.string.sheet_generated), true);
+                        }
+                    })
+                    .show();
+
+            prompEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+                @Override
+                public void afterTextChanged(Editable s) { }
+
+                @Override
+                public void onTextChanged(CharSequence text, int start, int before, int count) {
+                    sheetFileName[0] = text.toString();
+                }
+            });
+        } else {
+            String[] permissions = { Manifest.permission.WRITE_EXTERNAL_STORAGE };
+            ActivityCompat.requestPermissions(MainActivity.this, permissions, WRITE_EXTERNAL_STORARE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == WRITE_EXTERNAL_STORARE) {
+            List<Integer> grantResultsList = new ArrayList<>();
+            for (int grantResult : grantResults) {
+                grantResultsList.add(grantResult);
+            }
+            Boolean allGranted = !grantResultsList.contains(PackageManager.PERMISSION_DENIED);
+            if (allGranted) {
+                generateSheet();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 

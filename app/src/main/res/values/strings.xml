@@ -21,6 +21,7 @@
     <string name="tap_select_days">Tap to select the days</string>
     <string name="dismiss">Dismiss</string>
     <string name="date_pattern">MM/dd/yyyy</string>
+    <string name="date_time_pattern">MM/dd/yyyy - HH:mm</string>
     <string name="log_db_node">logs</string>
     <string name="log_saved_successful">Log saved successful</string>
     <string name="normal_work">Normal work</string>
@@ -28,6 +29,12 @@
     <string name="start_time_db_node">startTime_year_month</string>
     <string name="today">Today</string>
     <string name="tap_to_complete">tap to complete</string>
+    <string name="type_file_name">Type the file name</string>
+    <string name="generate_file">Generate File</string>
+    <string name="logs">Logs</string>
+    <string name="log_type">Log Type</string>
+    <string name="sheet_generated">Sheet Generated</string>
+    <string name="my_logs">MyLogs</string>
 
     <string-array name="workloadArray">
         <item>1 hour</item>
