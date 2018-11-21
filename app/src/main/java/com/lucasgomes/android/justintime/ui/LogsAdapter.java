@@ -20,7 +20,6 @@ public class LogsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     final private ListItemClickListener mOnListItemClickListener;
 
     public LogsAdapter(ArrayList<LogGroup> logs, ListItemClickListener mOnListItemClickListener) {
-        //Collections.sort(logs, new SortLogByDate());
         this.mLogs = logs;
         this.mOnListItemClickListener = mOnListItemClickListener;
     }

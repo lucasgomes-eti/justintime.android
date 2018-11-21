@@ -3,11 +3,9 @@ package com.lucasgomes.android.justintime.ui;
 import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -29,21 +27,17 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.lucasgomes.android.justintime.App;
 import com.lucasgomes.android.justintime.R;
 import com.lucasgomes.android.justintime.helper.CalendarUtils;
-import com.lucasgomes.android.justintime.model.CalendarEntity;
 import com.lucasgomes.android.justintime.model.Log;
 import com.lucasgomes.android.justintime.model.LogEntity;
 import com.lucasgomes.android.justintime.model.LogGroup;
-import com.lucasgomes.android.justintime.viewmodel.MainViewModel;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
@@ -66,8 +60,6 @@ import java.util.Set;
 public class MainActivity
         extends AppCompatActivity
         implements YearMonthPickerDialogFragment.OnDateSelectedListener, ListItemClickListener {
-
-    private MainViewModel viewModel;
 
     private final LogsAdapter logsAdapter = new LogsAdapter(
             new ArrayList<>(), this);
@@ -110,10 +102,6 @@ public class MainActivity
         if (getIntent().getBooleanExtra(OPEN_NEW_LOG_KEY, false)) {
             newLog();
         }
-
-
-        ((App) getApplication()).component.inject(this);
-        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         monthButton = findViewById(R.id.btn_month);
 
