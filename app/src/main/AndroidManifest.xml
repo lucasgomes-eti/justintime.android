@@ -21,8 +21,24 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.LoginActivity" />
-        <activity android:name=".ui.SettingsActivity"
-            android:label="@string/settings"/>
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="@string/settings" />
+
+        <receiver android:name=".ui.LogAppWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/log_app_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".ui.WidgetService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

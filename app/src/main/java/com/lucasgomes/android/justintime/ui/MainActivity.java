@@ -34,6 +34,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.lucasgomes.android.justintime.App;
 import com.lucasgomes.android.justintime.R;
@@ -78,7 +79,12 @@ public class MainActivity
 
     private Calendar calendar = Calendar.getInstance();
 
+    private ValueEventListener valueEventListener;
+
+    private Query logsQuery;
+
     private static String CALENDAR_KEY = "calendar";
+    public static String OPEN_NEW_LOG_KEY = "open_new_log";
     private static int WRITE_EXTERNAL_STORARE = 1000;
 
     private FirebaseAuth auth;
@@ -99,6 +105,10 @@ public class MainActivity
         if (auth.getCurrentUser() == null) {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
+        }
+
+        if (getIntent().getBooleanExtra(OPEN_NEW_LOG_KEY, false)) {
+            newLog();
         }
 
 
@@ -123,18 +133,70 @@ public class MainActivity
             }
         });
 
-        findViewById(R.id.fab_new_log).setOnClickListener((v -> {
-            NewLogDialogFragment newLogDialogFragment = new NewLogDialogFragment();
-            if (!newLogDialogFragment.isAdded()) {
-                getSupportFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .add(android.R.id.content, newLogDialogFragment)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        }));
+        findViewById(R.id.fab_new_log).setOnClickListener(v -> newLog());
 
+        valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                logsAdapter.mLogs.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (snapshot.getValue() != null) {
+                        Log log = new Log(snapshot.getValue(LogEntity.class));
+                        log.setDatabaseReference(snapshot.getRef());
+                        StringBuilder title = new StringBuilder();
+                        if (log.getStartTime().get(Calendar.DAY_OF_MONTH) == Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
+                            title.append(getString(R.string.today));
+                        } else {
+                            title.append(log.getStartTime().get(Calendar.DAY_OF_MONTH));
+                            title.append(", ");
+                            title.append(getResources().getStringArray(R.array.workDaysArray)[log.getStartTime().get(Calendar.DAY_OF_WEEK)]);
+                        }
+
+                        LogGroup logGroupTitle = new LogGroup(title.toString(), null);
+                        LogGroup logGroup = new LogGroup("", log);
+
+                        Boolean containsTitle = false;
+                        for (LogGroup mLog : logsAdapter.mLogs) {
+                            if (mLog.getTitle().equals(logGroupTitle.getTitle())) {
+                                containsTitle = true;
+                                break;
+                            }
+                        }
+
+                        if (containsTitle) {
+                            logsAdapter.mLogs.add(logGroup);
+                            logsAdapter.notifyDataSetChanged();
+                        } else {
+                            logsAdapter.mLogs.add(logGroupTitle);
+                            logsAdapter.mLogs.add(logGroup);
+                            logsAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                showMessage(databaseError.getMessage(), true);
+            }
+        };
+    }
+
+    private void newLog() {
+        NewLogDialogFragment newLogDialogFragment = new NewLogDialogFragment();
+        if (!newLogDialogFragment.isAdded()) {
+            getSupportFragmentManager().beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .add(android.R.id.content, newLogDialogFragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+
+    @Override
+    protected void onResume() {
         new QueryLogs().execute();
+        super.onResume();
     }
 
     private class QueryLogs extends AsyncTask<Void, Void, Void> {
@@ -150,54 +212,17 @@ public class MainActivity
         String startTime = String.valueOf(String.valueOf(calendar.get(Calendar.YEAR)) +
                 String.valueOf(calendar.get(Calendar.MONTH)));
 
-        databaseReference.child(getString(R.string.log_db_node))
+        logsQuery = databaseReference.child(getString(R.string.log_db_node))
                 .child(userId)
-                .orderByChild(getString(R.string.start_time_db_node)).equalTo(startTime)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        logsAdapter.mLogs.clear();
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            if (snapshot.getValue() != null) {
-                                Log log = new Log(snapshot.getValue(LogEntity.class));
-                                log.setDatabaseReference(snapshot.getRef());
-                                StringBuilder title = new StringBuilder();
-                                if (log.getStartTime().get(Calendar.DAY_OF_MONTH) == Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
-                                    title.append(getString(R.string.today));
-                                } else {
-                                    title.append(log.getStartTime().get(Calendar.DAY_OF_MONTH));
-                                    title.append(',');
-                                    title.append(getResources().getStringArray(R.array.workDaysValues)[log.getStartTime().get(Calendar.DAY_OF_WEEK)]);
-                                }
+                .orderByChild(getString(R.string.start_time_db_node)).equalTo(startTime);
 
-                                LogGroup logGroupTitle = new LogGroup(title.toString(), null);
-                                LogGroup logGroup = new LogGroup("", log);
+        logsQuery.addValueEventListener(valueEventListener);
+    }
 
-                                Boolean containsTitle = false;
-                                for (LogGroup mLog : logsAdapter.mLogs) {
-                                    if (mLog.getTitle().equals(logGroupTitle.getTitle())) {
-                                        containsTitle = true;
-                                        break;
-                                    }
-                                }
-
-                                if (containsTitle) {
-                                    logsAdapter.mLogs.add(logGroup);
-                                    logsAdapter.notifyDataSetChanged();
-                                } else {
-                                    logsAdapter.mLogs.add(logGroupTitle);
-                                    logsAdapter.mLogs.add(logGroup);
-                                    logsAdapter.notifyDataSetChanged();
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        showMessage(databaseError.getMessage(), true);
-                    }
-                });
+    @Override
+    protected void onPause() {
+        logsQuery.removeEventListener(valueEventListener);
+        super.onPause();
     }
 
     private void showMessage(String message, Boolean dismissAction) {
@@ -217,42 +242,54 @@ public class MainActivity
     @Override
     public void onListItemClick(int itemIndex) {
         Log log = logsAdapter.mLogs.get(itemIndex).getLog();
-        Calendar calendarEndTime = Calendar.getInstance();
 
-        Set<String> workDays = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_PRIVATE)
-                .getStringSet(getString(R.string.work_days_key),
-                        new HashSet<>(Arrays.asList(getResources().getStringArray(R.array.workDaysValuesDefault))));
+        if (log != null && log.getEndTime() == null) {
+            Calendar calendarEndTime = Calendar.getInstance();
 
-        int workload = Integer.valueOf(getSharedPreferences(getPackageName() + "_preferences", Context.MODE_PRIVATE)
-                .getString(getString(R.string.workload_key), "8"));
+            Set<String> workDays = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_PRIVATE)
+                    .getStringSet(getString(R.string.work_days_key),
+                            new HashSet<>(Arrays.asList(getResources().getStringArray(R.array.workDaysValuesDefault))));
 
-        int hoursWorked = calendarEndTime.get(Calendar.HOUR) - log.getStartTime().get(Calendar.HOUR);
+            int workload = Integer.valueOf(getSharedPreferences(getPackageName() + "_preferences", Context.MODE_PRIVATE)
+                    .getString(getString(R.string.workload_key), "8"));
 
-        if (workDays.contains(String.valueOf(log.getStartTime().get(Calendar.DAY_OF_WEEK)))) {
-            if (hoursWorked > workload) {
-                int extraHoursWorked = hoursWorked - workload;
-                Calendar calendarEndNormalWork = calendarEndTime;
-                calendarEndNormalWork.set(Calendar.HOUR, calendarEndTime.get(Calendar.HOUR) - extraHoursWorked);
+            int hoursWorked = calendarEndTime.get(Calendar.HOUR) - log.getStartTime().get(Calendar.HOUR);
 
-                log.setEndTime(calendarEndNormalWork);
-                log.setComplete(true);
+            if (workDays.contains(String.valueOf(log.getStartTime().get(Calendar.DAY_OF_WEEK)))) {
+                if (hoursWorked > workload) {
+                    int extraHoursWorked = hoursWorked - workload;
+                    Calendar calendarEndNormalWork = calendarEndTime;
+                    calendarEndNormalWork.set(Calendar.HOUR, calendarEndTime.get(Calendar.HOUR) - extraHoursWorked);
 
-                log.getDatabaseReference().setValue(new LogEntity(log));
-                databaseReference.child(getString(R.string.log_db_node))
-                        .child(auth.getCurrentUser().getUid())
-                        .push()
-                        .setValue(new LogEntity(new Log(calendarEndNormalWork, calendarEndTime, getString(R.string.extra_work), true)));
+                    log.setEndTime(calendarEndNormalWork);
+                    log.setComplete(true);
+
+                    if (log.getDatabaseReference() != null) {
+                        log.getDatabaseReference().setValue(new LogEntity(log));
+                    }
+                    if (auth != null && auth.getCurrentUser() != null) {
+                        databaseReference.child(getString(R.string.log_db_node))
+                                .child(auth.getCurrentUser().getUid())
+                                .push()
+                                .setValue(new LogEntity(new Log(calendarEndNormalWork, calendarEndTime, getString(R.string.extra_work), true)));
+                    }
+
+                } else {
+                    log.setEndTime(calendarEndTime);
+                    log.setComplete(true);
+
+                    if (log.getDatabaseReference() != null) {
+                        log.getDatabaseReference().setValue(new LogEntity(log));
+                    }
+                }
             } else {
                 log.setEndTime(calendarEndTime);
                 log.setComplete(true);
 
-                log.getDatabaseReference().setValue(new LogEntity(log));
+                if (log.getDatabaseReference() != null) {
+                    log.getDatabaseReference().setValue(new LogEntity(log));
+                }
             }
-        } else {
-            log.setEndTime(calendarEndTime);
-            log.setComplete(true);
-
-            log.getDatabaseReference().setValue(new LogEntity(log));
         }
     }
 

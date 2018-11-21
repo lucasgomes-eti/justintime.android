@@ -5,6 +5,8 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.core.DatabaseConfig;
 
 import java.util.Calendar;
 
@@ -56,6 +58,10 @@ public class Log implements Parcelable {
         logType = in.readString();
         byte tmpIsComplete = in.readByte();
         isComplete = tmpIsComplete == 0 ? null : tmpIsComplete == 1;
+        String path = in.readString();
+        if (path != null) {
+            databaseReference = FirebaseDatabase.getInstance().getReference().child(path);
+        }
     }
 
     public static final Creator<Log> CREATOR = new Creator<Log>() {
@@ -114,6 +120,9 @@ public class Log implements Parcelable {
         dest.writeSerializable(endTime);
         dest.writeString(logType);
         dest.writeByte((byte) (isComplete == null ? 0 : isComplete ? 1 : 2));
+        if (databaseReference != null) {
+            dest.writeString(databaseReference.getPath().wireFormat());
+        }
     }
 
     @Nullable
