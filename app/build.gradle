@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'justintime'
+            keyPassword 'emFX7]J]u5HExeG9'
+            storeFile file('../keystore/justintimekeystore')
+            storePassword 'emFX7]J]u5HExeG9'
+        }
+    }
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.lucasgomes.android.justintime"
@@ -15,6 +23,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
         buildTypes.each {
             it.buildConfigField 'String', 'ApiBaseUrl', API_BASE_URL
@@ -27,11 +36,8 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support.constraint:constraint-layout:$rootProject.constraint_layout"
-    implementation 'com.android.support:support-v4:28.0.0'
-    implementation 'com.android.support:support-vector-drawable:28.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation "junit:junit:$rootProject.junit"
     androidTestImplementation "com.android.support.test:runner:$rootProject.runner"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.espresso"
@@ -42,6 +48,7 @@ dependencies {
     implementation "com.android.support:preference-v7:$rootProject.android_support"
     implementation "com.android.support:design:$rootProject.android_support"
     implementation "com.android.support:support-media-compat:$rootProject.android_support"
+    implementation "com.android.support:support-vector-drawable:$rootProject.android_support"
 
     // Architecture Components
 
@@ -60,8 +67,10 @@ dependencies {
 
     //Firebase
     implementation "com.google.firebase:firebase-core:$rootProject.firebase"
+
     //Auth
     implementation "com.google.firebase:firebase-auth:$rootProject.firebase"
+
     //Database
     implementation "com.google.firebase:firebase-database:$rootProject.firebase"
 
